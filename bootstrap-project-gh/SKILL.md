@@ -24,7 +24,12 @@ Ejecutar un flujo determinista para crear un proyecto nuevo con Git local, publi
 3. Crear proyecto local:
 - Crear carpeta `target_dir`.
 - Ejecutar `git init` solo dentro de `target_dir`.
-- Crear `README.md` minimo con titulo del proyecto.
+- Crear `README.md` con explicacion breve del bootstrap y de los perfiles cubiertos por `.gitignore`.
+- Crear `.gitignore` base multi-stack para:
+  - Frontend React + Vite
+  - Python backend (FastAPI, Django, Flask)
+  - PHP backend (Laravel, CodeIgniter)
+  - Java backend (Spring Boot)
 - Hacer commit inicial.
 4. Crear repo remoto y publicar:
 - Ejecutar `gh repo create "$project_name" --<visibility> --source=. --remote=origin --push` desde `target_dir`.
@@ -57,4 +62,5 @@ bash scripts/bootstrap_project.sh orm-saber-icfes-calificacion-v2 \
 - No ejecutar `git init` fuera de la carpeta del proyecto nuevo.
 - No sobrescribir una carpeta de proyecto ya existente.
 - Mantener el repo fuente de skills como clon temporal y eliminarlo al final.
+- Incluir en `README.md` una seccion corta que explique que el `.gitignore` ya trae perfiles para React/Vite, FastAPI/Django/Flask, Laravel/CodeIgniter y Spring Boot.
 - Reportar URL del repo GitHub creado y resumen de archivos/copias realizadas.

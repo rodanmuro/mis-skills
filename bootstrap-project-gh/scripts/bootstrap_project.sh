@@ -63,9 +63,107 @@ mkdir -p "$TARGET_DIR"
 pushd "$TARGET_DIR" >/dev/null
 
 git init
-printf "# %s\n" "$PROJECT_NAME" > README.md
+cat > README.md <<EOF
+# $PROJECT_NAME
 
-git add README.md
+Proyecto inicializado con \`bootstrap-project-gh\`.
+
+## Gitignore base incluido
+
+Este repositorio incluye un \`.gitignore\` base con perfiles para:
+- Frontend: React + Vite
+- Python backend: FastAPI, Django, Flask
+- PHP backend: Laravel, CodeIgniter
+- Java backend: Spring Boot (Maven/Gradle)
+
+Ajusta o elimina las secciones que no apliquen a tu stack real.
+EOF
+
+cat > .gitignore <<'EOF'
+# OS / Editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# Secrets / env files
+.env
+.env.*
+!.env.example
+
+# Logs
+*.log
+
+# ------------------------------
+# Frontend (React / Vite / Node)
+# ------------------------------
+node_modules/
+dist/
+.vite/
+.cache/
+.eslintcache
+coverage/
+*.tsbuildinfo
+src/frontend/node_modules/
+src/frontend/dist/
+src/frontend/.vite/
+
+# ------------------------------
+# Python backends (FastAPI / Django / Flask)
+# ------------------------------
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+.coverage.*
+htmlcov/
+venv/
+.venv/
+env/
+src/backend/venv/
+src/backend/.venv/
+
+# ------------------------------
+# PHP backends (Laravel / CodeIgniter)
+# ------------------------------
+vendor/
+composer.lock
+.phpunit.result.cache
+storage/logs/
+storage/framework/cache/
+storage/framework/sessions/
+storage/framework/views/
+bootstrap/cache/
+writable/cache/
+writable/logs/
+writable/session/
+writable/uploads/
+
+# ------------------------------
+# Java backend (Spring Boot / Gradle / Maven)
+# ------------------------------
+target/
+build/
+.gradle/
+out/
+*.class
+*.jar
+*.war
+*.ear
+
+# Java tooling
+*.iml
+.project
+.classpath
+.settings/
+EOF
+
+git add README.md .gitignore
 git commit -m "chore: initial commit"
 
 gh repo create "$PROJECT_NAME" "--$VISIBILITY" --source=. --remote=origin --push
