@@ -10,7 +10,7 @@
 ## Que fue lo que se hizo
 - Usar subtitulos `###` para separar temas concretos.
 - Incluya detalles de implementacion del codigo sin copiar el codigo completo; solo ideas relevantes.
-- Debe indicar que archivos fueron modificados o creados.
+- Debe indicar que archivos fueron modificados o creados usando rutas relativas.
 
 ## Para que se hizo
 - Usar subtitulos `###` para identificar objetivos concretos si hubo varios.
@@ -31,4 +31,4 @@
 - Usar subtitulos `###` para cada pendiente o siguiente paso importante.
 -
 
-*(Agregar enlaces a archivos clave o referencias adicionales si aplica.)*
+*(Agregar enlaces o referencias a archivos clave usando rutas relativas si aplica.)*

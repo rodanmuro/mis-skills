@@ -41,6 +41,7 @@ Crear una nueva bitacora sin recibir argumentos y sin sobrescribir archivos exis
 - El `Summary` debe funcionar como indice semantico de contenido especifico: cada linea debe apuntar a temas concretos que ayuden a ubicar informacion relevante rapidamente.
 - El objetivo del `Summary` es mejorar la exploracion automatizada de bitacoras largas por parte de LLMs o agentes que necesiten ubicar antecedentes, decisiones, bugs o proximos pasos.
 - Mencionar siempre archivos creados/modificados.
+- Si la bitacora hace referencia a archivos especificos, usar rutas relativas dentro del proyecto.
 - No pegar codigo completo; registrar ideas de implementacion relevantes.
 - Al finalizar, reportar ruta del archivo creado y resumen breve.
 
@@ -61,7 +62,7 @@ Usar esta plantilla base para crear la bitacora:
 ## Que fue lo que se hizo
 - Usar subtitulos `###` para separar temas concretos.
 - Incluya detalles de implementacion del codigo sin copiar el codigo completo; solo ideas relevantes.
-- Debe indicar que archivos fueron modificados o creados.
+- Debe indicar que archivos fueron modificados o creados usando rutas relativas.
 
 ## Para que se hizo
 - Usar subtitulos `###` para identificar objetivos concretos si hubo varios.
@@ -82,5 +83,5 @@ Usar esta plantilla base para crear la bitacora:
 - Usar subtitulos `###` para cada pendiente o siguiente paso importante.
 -
 
-*(Agregar enlaces a archivos clave o referencias adicionales si aplica.)*
+*(Agregar enlaces o referencias a archivos clave usando rutas relativas si aplica.)*
 ```
