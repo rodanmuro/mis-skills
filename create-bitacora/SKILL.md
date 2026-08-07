@@ -24,13 +24,21 @@ Crear una nueva bitacora sin recibir argumentos y sin sobrescribir archivos exis
 7. Cargar `bitacoras/bitacora-template.md` como base.
 8. Reemplazar el titulo por: `# Bitacora XXX_MM_DD_AAAA HH:mm:ss descripcion_corta`.
 9. Agregar un `## Summary` inmediatamente despues del encabezado como indice semantico breve para LLMs y agentes.
-10. Usar subtitulos `###` dentro de las secciones principales para nombrar temas concretos de la sesion, por ejemplo modulos tocados, bugs, decisiones o pendientes.
-11. Completar secciones con contenido real de la sesion:
+10. Obtener el tiempo dedicado, si el skill `tiempo-trabajo` esta instalado:
+   - Ejecutar `bash .claude/skills/tiempo-trabajo/scripts/tiempo.sh consumir --peek`.
+   - Si devuelve un bloque `## Tiempo`, copiarlo tal cual debajo del `## Summary`.
+   - Si responde que no hay tiempos pendientes, omitir la seccion `## Tiempo`.
+   - No inventar, estimar ni recalcular horas: se usa la salida literal del script.
+11. Usar subtitulos `###` dentro de las secciones principales para nombrar temas concretos de la sesion, por ejemplo modulos tocados, bugs, decisiones o pendientes.
+12. Completar secciones con contenido real de la sesion:
    - Que fue lo que se hizo
    - Para que se hizo
    - Que problemas se presentaron
    - Como se resolvieron
    - Que continua
+13. Una vez el archivo existe en disco con el bloque `## Tiempo` incluido, ejecutar
+   `bash .claude/skills/tiempo-trabajo/scripts/tiempo.sh consumir` para vaciar la bandeja de pendientes.
+   Nunca vaciarla antes de que la bitacora este escrita.
 
 ## Reglas
 
@@ -40,6 +48,10 @@ Crear una nueva bitacora sin recibir argumentos y sin sobrescribir archivos exis
 - El `Summary` debe listar los subtitulos `###` realmente usados en la bitacora, no los encabezados `##` fijos.
 - El `Summary` debe funcionar como indice semantico de contenido especifico: cada linea debe apuntar a temas concretos que ayuden a ubicar informacion relevante rapidamente.
 - El objetivo del `Summary` es mejorar la exploracion automatizada de bitacoras largas por parte de LLMs o agentes que necesiten ubicar antecedentes, decisiones, bugs o proximos pasos.
+- El bloque `## Tiempo` va inmediatamente despues del `## Summary` y antes de `## Que fue lo que se hizo`.
+- El bloque `## Tiempo` se copia literal de `tiempo.sh consumir --peek`; sus lineas (`inicio`, `fin`, `pausas`, `bruto`, `efectivo`) son parseables por script y no se deben reformatear.
+- Vaciar los tiempos pendientes solo despues de escribir la bitacora, nunca antes.
+- Si no hay tiempos pendientes, la bitacora se crea igual, sin seccion `## Tiempo`.
 - Mencionar siempre archivos creados/modificados.
 - Si la bitacora hace referencia a archivos especificos, usar rutas relativas dentro del proyecto.
 - No pegar codigo completo; registrar ideas de implementacion relevantes.
@@ -58,6 +70,15 @@ Usar esta plantilla base para crear la bitacora:
 - `###` Bug, bloqueo o decision relevante
 - `###` Solucion aplicada
 - `###` Siguiente paso o pendiente clave
+
+## Tiempo
+- inicio: AAAA-MM-DDTHH:mm:ss-05:00
+- fin: AAAA-MM-DDTHH:mm:ss-05:00
+- pausas: HH:MM:SS (n)
+- bruto: HH:MM:SS
+- efectivo: HH:MM:SS
+
+*(Bloque generado por `tiempo-trabajo`. Copiar literal; omitir la seccion completa si no hay tiempos pendientes.)*
 
 ## Que fue lo que se hizo
 - Usar subtitulos `###` para separar temas concretos.
