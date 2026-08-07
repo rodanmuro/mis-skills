@@ -7,7 +7,6 @@ Idempotente: se puede correr varias veces sin duplicar nada.
 """
 import json
 import os
-import shutil
 import sys
 
 # El comando instalado lleva comillas en medio (tiempo.sh" latido), asi que la
@@ -26,17 +25,27 @@ def ruta_script(raiz, dir_skill):
     return '"%s"' % script
 
 
+# Ruta que traen los comandos por defecto; se reescribe a la real al instalar.
+RUTA_POR_DEFECTO = '"$CLAUDE_PROJECT_DIR/.claude/skills/tiempo-trabajo/scripts/tiempo.sh"'
+
+
 def instalar_comandos(raiz, dir_skill):
     origen = os.path.join(dir_skill, "assets", "commands")
     destino = os.path.join(raiz, ".claude", "commands")
     if not os.path.isdir(origen):
         return []
     os.makedirs(destino, exist_ok=True)
+    real = ruta_script(raiz, dir_skill)
     puestos = []
     for nombre in sorted(os.listdir(origen)):
         if not nombre.endswith(".md"):
             continue
-        shutil.copy2(os.path.join(origen, nombre), os.path.join(destino, nombre))
+        with open(os.path.join(origen, nombre), encoding="utf-8") as fh:
+            texto = fh.read()
+        if real != RUTA_POR_DEFECTO:
+            texto = texto.replace(RUTA_POR_DEFECTO, real)
+        with open(os.path.join(destino, nombre), "w", encoding="utf-8") as fh:
+            fh.write(texto)
         puestos.append("/" + nombre[:-3])
     return puestos
 
