@@ -10,8 +10,8 @@ Crear una nueva bitacora sin recibir argumentos y sin sobrescribir archivos exis
 
 ## Flujo
 
-1. Verificar que exista `bitacoras/bitacora-template.md`. Si no existe, detenerse y explicar el error.
-2. Listar `bitacoras/` y detectar archivos que cumplan el patron `XXX_MM_DD_AAAA_descripcion_corta.md`.
+1. Verificar si existe `bitacoras/bitacora-template.md`.
+2. Listar `bitacoras/` si existe y detectar archivos que cumplan el patron `XXX_MM_DD_AAAA_descripcion_corta.md`.
 3. Obtener el ultimo consecutivo `XXX` y calcular el siguiente. Si no hay archivos previos, usar `000`.
 4. Obtener fecha y hora actual del sistema en formato:
    - Fecha para nombre del archivo: `MM_DD_AAAA`
@@ -21,8 +21,11 @@ Crear una nueva bitacora sin recibir argumentos y sin sobrescribir archivos exis
    - Minusculas
    - Separadas con guion bajo
 6. Crear el archivo `bitacoras/XXX_MM_DD_AAAA_descripcion_corta.md`.
-7. Cargar `bitacoras/bitacora-template.md` como base.
-8. Reemplazar el titulo por: `# Bitacora XXX_MM_DD_AAAA HH:mm:ss descripcion_corta`.
+7. Elegir la base de contenido:
+   - Si existe `bitacoras/bitacora-template.md`, cargarlo como base.
+   - Si no existe el template pero hay bitacoras previas, usar la estructura de la bitacora previa mas reciente como referencia y reemplazar todo contenido especifico por contenido real de la sesion actual.
+   - Si no existe el template y tampoco hay bitacoras previas, usar la `## Plantilla` embebida en este skill como base.
+8. Reemplazar o crear el titulo por: `# Bitacora XXX_MM_DD_AAAA HH:mm:ss descripcion_corta`.
 9. Agregar un `## Summary` inmediatamente despues del encabezado como indice semantico breve para LLMs y agentes.
 10. Intentar obtener el tiempo dedicado solo si el skill `tiempo-trabajo` esta disponible:
    - Buscar el script en estas rutas, en este orden:
@@ -48,6 +51,10 @@ Crear una nueva bitacora sin recibir argumentos y sin sobrescribir archivos exis
 
 - No sobrescribir bitacoras existentes.
 - Si hay colision de nombre, ajustar `descripcion_corta` y mantener el consecutivo calculado.
+- La ausencia de `bitacoras/bitacora-template.md` no debe bloquear la creacion de la bitacora.
+- Si falta `bitacoras/`, crear la carpeta antes de crear la bitacora.
+- Si falta el template y no hay bitacoras previas, crear la primera bitacora desde la `## Plantilla` embebida en este skill.
+- Si falta el template pero hay bitacoras previas, usar la ultima solo como referencia estructural; no copiar hechos, decisiones, tiempos ni pendientes de una sesion anterior.
 - El `Summary` debe quedar inmediatamente despues del titulo.
 - El `Summary` debe listar los subtitulos `###` realmente usados en la bitacora, no los encabezados `##` fijos.
 - El `Summary` debe funcionar como indice semantico de contenido especifico: cada linea debe apuntar a temas concretos que ayuden a ubicar informacion relevante rapidamente.
