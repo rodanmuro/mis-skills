@@ -1,6 +1,6 @@
 ---
 name: create-bitacora
-description: Crea una nueva bitacora en bitacoras con consecutivo, fecha y hora usando bitacora-template.md. El nombre corto lo define el LLM segun el contenido principal registrado. Usar cuando se solicite registrar avances.
+description: Crea una nueva bitacora con consecutivo, fecha y hora usando el template disponible o la plantilla embebida. Detecta la carpeta de bitacoras del proyecto y define el nombre corto segun el contenido principal registrado. Usar cuando se solicite registrar avances.
 disable-model-invocation: true
 ---
 
@@ -10,24 +10,32 @@ Crear una nueva bitacora sin recibir argumentos y sin sobrescribir archivos exis
 
 ## Flujo
 
-1. Verificar si existe `bitacoras/bitacora-template.md`.
-2. Listar `bitacoras/` si existe y detectar archivos que cumplan el patron `XXX_MM_DD_AAAA_descripcion_corta.md`.
-3. Obtener el ultimo consecutivo `XXX` y calcular el siguiente. Si no hay archivos previos, usar `000`.
-4. Obtener fecha y hora actual del sistema en formato:
-   - Fecha para nombre del archivo: `MM_DD_AAAA`
+1. Definir `bitacoras_dir`:
+   - Si existe `bitacoras/`, usar `bitacoras/`.
+   - Si no existe `bitacoras/` pero existe `0_planeacion/bitacoras/`, usar `0_planeacion/bitacoras/`.
+   - Si no existe ninguna, crear y usar `bitacoras/`.
+2. Verificar si existe `<bitacoras_dir>/bitacora-template.md`.
+3. Listar `<bitacoras_dir>/` y detectar archivos que cumplan alguno de estos patrones:
+   - `XXX_MM_DD_AAAA_descripcion_corta.md`
+   - `XXX_DD_MM_AAAA_descripcion_corta.md`
+   - Si el proyecto ya tiene bitacoras previas, conservar el formato de fecha que usan esas bitacoras.
+   - Si no hay bitacoras previas, usar `MM_DD_AAAA`.
+4. Obtener el ultimo consecutivo `XXX` y calcular el siguiente. Si no hay archivos previos, usar `000`.
+5. Obtener fecha y hora actual del sistema en formato:
+   - Fecha para nombre del archivo: `MM_DD_AAAA` por defecto, o `DD_MM_AAAA` si las bitacoras previas del proyecto usan ese formato.
    - Hora para encabezado: `HH:mm:ss` (24h)
-5. Definir `descripcion_corta` automaticamente segun el contenido fundamental de la bitacora:
+6. Definir `descripcion_corta` automaticamente segun el contenido fundamental de la bitacora:
    - Maximo 10 palabras
    - Minusculas
    - Separadas con guion bajo
-6. Crear el archivo `bitacoras/XXX_MM_DD_AAAA_descripcion_corta.md`.
-7. Elegir la base de contenido:
-   - Si existe `bitacoras/bitacora-template.md`, cargarlo como base.
+7. Crear el archivo `<bitacoras_dir>/XXX_FECHA_descripcion_corta.md`.
+8. Elegir la base de contenido:
+   - Si existe `<bitacoras_dir>/bitacora-template.md`, cargarlo como base.
    - Si no existe el template pero hay bitacoras previas, usar la estructura de la bitacora previa mas reciente como referencia y reemplazar todo contenido especifico por contenido real de la sesion actual.
    - Si no existe el template y tampoco hay bitacoras previas, usar la `## Plantilla` embebida en este skill como base.
-8. Reemplazar o crear el titulo por: `# Bitacora XXX_MM_DD_AAAA HH:mm:ss descripcion_corta`.
-9. Agregar un `## Summary` inmediatamente despues del encabezado como indice semantico breve para LLMs y agentes.
-10. Intentar obtener el tiempo dedicado solo si el skill `tiempo-trabajo` esta disponible:
+9. Reemplazar o crear el titulo por: `# Bitacora XXX_FECHA HH:mm:ss descripcion_corta`.
+10. Agregar un `## Summary` inmediatamente despues del encabezado como indice semantico breve para LLMs y agentes.
+11. Intentar obtener el tiempo dedicado solo si el skill `tiempo-trabajo` esta disponible:
    - Buscar el script en estas rutas, en este orden:
      - `.claude/skills/tiempo-trabajo/scripts/tiempo.sh` (Claude Code)
      - `.agents/skills/tiempo-trabajo/scripts/tiempo.sh` (Codex)
@@ -36,14 +44,14 @@ Crear una nueva bitacora sin recibir argumentos y sin sobrescribir archivos exis
    - Si responde que no hay tiempos pendientes, omitir la seccion `## Tiempo`.
    - Si el archivo no existe, no es ejecutable, falla, devuelve error o no responde con un bloque valido `## Tiempo`, omitir la seccion `## Tiempo` y continuar.
    - No inventar, estimar ni recalcular horas: se usa la salida literal del script.
-11. Usar subtitulos `###` dentro de las secciones principales para nombrar temas concretos de la sesion, por ejemplo modulos tocados, bugs, decisiones o pendientes.
-12. Completar secciones con contenido real de la sesion:
+12. Usar subtitulos `###` dentro de las secciones principales para nombrar temas concretos de la sesion, por ejemplo modulos tocados, bugs, decisiones o pendientes.
+13. Completar secciones con contenido real de la sesion:
    - Que fue lo que se hizo
    - Para que se hizo
    - Que problemas se presentaron
    - Como se resolvieron
    - Que continua
-13. Si se incluyo un bloque `## Tiempo` generado por `tiempo-trabajo` y el archivo de bitacora ya existe en disco, intentar ejecutar
+14. Si se incluyo un bloque `## Tiempo` generado por `tiempo-trabajo` y el archivo de bitacora ya existe en disco, intentar ejecutar
    `bash <script_tiempo> consumir` usando la misma ruta que funciono en el `--peek` para vaciar la bandeja de pendientes.
    Nunca vaciarla antes de que la bitacora este escrita. Si el consumo falla, reportarlo brevemente y conservar la bitacora creada.
 
@@ -51,10 +59,13 @@ Crear una nueva bitacora sin recibir argumentos y sin sobrescribir archivos exis
 
 - No sobrescribir bitacoras existentes.
 - Si hay colision de nombre, ajustar `descripcion_corta` y mantener el consecutivo calculado.
-- La ausencia de `bitacoras/bitacora-template.md` no debe bloquear la creacion de la bitacora.
-- Si falta `bitacoras/`, crear la carpeta antes de crear la bitacora.
+- Usar siempre `bitacoras_dir` para buscar template, listar bitacoras previas y crear la nueva bitacora.
+- Preferir `bitacoras/` cuando exista; usar `0_planeacion/bitacoras/` solo cuando `bitacoras/` no exista y el proyecto ya tenga esa estructura.
+- La ausencia de `<bitacoras_dir>/bitacora-template.md` no debe bloquear la creacion de la bitacora.
+- Si falta toda carpeta de bitacoras, crear `bitacoras/` antes de crear la bitacora.
 - Si falta el template y no hay bitacoras previas, crear la primera bitacora desde la `## Plantilla` embebida en este skill.
 - Si falta el template pero hay bitacoras previas, usar la ultima solo como referencia estructural; no copiar hechos, decisiones, tiempos ni pendientes de una sesion anterior.
+- Si hay bitacoras previas en formato `XXX_DD_MM_AAAA_descripcion_corta.md`, conservar ese formato para no mezclar convenciones dentro del mismo proyecto.
 - El `Summary` debe quedar inmediatamente despues del titulo.
 - El `Summary` debe listar los subtitulos `###` realmente usados en la bitacora, no los encabezados `##` fijos.
 - El `Summary` debe funcionar como indice semantico de contenido especifico: cada linea debe apuntar a temas concretos que ayuden a ubicar informacion relevante rapidamente.
@@ -78,7 +89,7 @@ Crear una nueva bitacora sin recibir argumentos y sin sobrescribir archivos exis
 Usar esta plantilla base para crear la bitacora:
 
 ```md
-# Bitacora XXX_MM_DD_AAAA HH:mm:ss descripcion_corta
+# Bitacora XXX_FECHA HH:mm:ss descripcion_corta
 
 ## Summary
 - `###` Modulo o cambio principal
