@@ -1,6 +1,6 @@
 ---
 name: bootstrap-project-gh
-description: Crea un proyecto nuevo dado un nombre, inicializa Git local dentro de la carpeta, crea el repositorio remoto en GitHub usando gh y hace push inicial. Luego instala skills desde un repositorio fuente (por defecto rodanmuro/mis-skills) en .claude/skills y .codex/skills del proyecto creado. Usar cuando se solicite bootstrap de proyecto con git+github+skills para agentes.
+description: Crea un proyecto nuevo dado un nombre, inicializa Git local dentro de la carpeta, crea el repositorio remoto en GitHub usando gh y hace push inicial. Luego instala skills desde un repositorio fuente (por defecto rodanmuro/mis-skills) en .claude/skills para Claude Code y .agents/skills para Codex. Usar cuando se solicite bootstrap de proyecto con git+github+skills para agentes.
 ---
 
 # Bootstrap Project GH
@@ -34,12 +34,12 @@ Ejecutar un flujo determinista para crear un proyecto nuevo con Git local, publi
 4. Crear repo remoto y publicar:
 - Ejecutar `gh repo create "$project_name" --<visibility> --source=. --remote=origin --push` desde `target_dir`.
 5. Instalar skills para agentes dentro del proyecto creado:
-- Crear `.claude/skills` y `.codex/skills`.
+- Crear `.claude/skills` para Claude Code y `.agents/skills` para Codex.
 - Clonar temporalmente `skills_repo` con `--depth 1`.
-- Copiar cada carpeta de skill del repo fuente a `.claude/skills/<skill>` y `.codex/skills/<skill>`.
+- Copiar cada carpeta del repo fuente que contenga `SKILL.md` a `.claude/skills/<skill>` y `.agents/skills/<skill>`.
 - No copiar la metadata Git del repo fuente (`.git`).
 6. Verificar resultado:
-- Confirmar que existen `.claude/skills/*/SKILL.md` y `.codex/skills/*/SKILL.md`.
+- Confirmar que existen `.claude/skills/*/SKILL.md` y `.agents/skills/*/SKILL.md`.
 7. Persistir cambios:
 - Hacer commit de skills instalados.
 - Hacer push.

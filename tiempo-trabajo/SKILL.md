@@ -16,10 +16,19 @@ El agente ejecuta el script y relata su salida literal. No recalcula, no estima,
 no redondea, no rellena huecos. Si el script falla, se reporta el error y se
 indica la accion correcta; no se inventa el dato.
 
-## Instalacion en un proyecto
+## Ubicacion del skill
+
+El skill puede estar instalado en rutas distintas segun el agente:
+
+- Claude Code: `.claude/skills/tiempo-trabajo/`
+- Codex: `.agents/skills/tiempo-trabajo/`
+
+El script `scripts/tiempo.sh` es la fuente de verdad en ambos casos.
+
+## Instalacion en Claude Code
 
 ```bash
-bash scripts/tiempo.sh instalar
+bash .claude/skills/tiempo-trabajo/scripts/tiempo.sh instalar
 ```
 
 Esto hace tres cosas, y es idempotente:
@@ -31,7 +40,23 @@ Esto hace tres cosas, y es idempotente:
 Tras instalar el hook hay que abrir `/hooks` una vez o reiniciar Claude Code para
 que cargue.
 
+## Uso en Codex
+
+Codex carga el skill desde `.agents/skills`, pero no usa `.claude/commands/` ni
+`.claude/settings.json`. En Codex se invoca el script directamente:
+
+```bash
+bash .agents/skills/tiempo-trabajo/scripts/tiempo.sh estado
+```
+
+Si el skill esta instalado solo en `.claude/skills`, usar esa ruta. No crear
+enlaces ni copiar datos de `bitacoras/tiempos/` entre rutas; los datos del
+proyecto viven en `bitacoras/tiempos/` y el script opera sobre la raiz git.
+
 ## Comandos
+
+Estos comandos slash son propios de Claude Code despues de ejecutar
+`tiempo.sh instalar`:
 
 | Comando | Accion | Que hace |
 |---|---|---|
@@ -42,7 +67,7 @@ que cargue.
 | `/et` | `estado` | Que hay abierto y cuanto llevas |
 | `/tt` | `reporte` | Total del proyecto |
 
-Acciones sin comando propio, se invocan por script:
+Acciones sin comando propio, o uso desde Codex, se invocan por script:
 
 - `consumir [--peek]` — bloque `## Tiempo` para la bitacora
 - `reconciliar` — reconstruye la jornada desde los latidos de actividad

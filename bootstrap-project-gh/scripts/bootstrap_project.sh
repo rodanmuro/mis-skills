@@ -68,6 +68,12 @@ cat > README.md <<EOF
 
 Proyecto inicializado con \`bootstrap-project-gh\`.
 
+## Skills de agentes
+
+Este repositorio incluye skills de proyecto en:
+- \`.claude/skills/\` para Claude Code
+- \`.agents/skills/\` para Codex
+
 ## Gitignore base incluido
 
 Este repositorio incluye un \`.gitignore\` base con perfiles para:
@@ -168,7 +174,7 @@ git commit -m "chore: initial commit"
 
 gh repo create "$PROJECT_NAME" "--$VISIBILITY" --source=. --remote=origin --push
 
-mkdir -p .claude/skills .codex/skills
+mkdir -p .claude/skills .agents/skills
 
 TMP_DIR="$(mktemp -d /tmp/mis-skills-XXXXXX)"
 cleanup() {
@@ -180,18 +186,19 @@ gh repo clone "$SKILLS_REPO" "$TMP_DIR/mis-skills" -- --depth 1
 
 while IFS= read -r -d '' d; do
   name="$(basename "$d")"
+  [[ -f "$d/SKILL.md" ]] || continue
   cp -a "$d" ".claude/skills/$name"
-  cp -a "$d" ".codex/skills/$name"
+  cp -a "$d" ".agents/skills/$name"
 done < <(find "$TMP_DIR/mis-skills" -mindepth 1 -maxdepth 1 -type d -print0)
 
-rm -rf .claude/skills/.git .codex/skills/.git
+rm -rf .claude/skills/.git .agents/skills/.git
 
 if [[ -f "$TMP_DIR/mis-skills/README.md" ]]; then
   cp -a "$TMP_DIR/mis-skills/README.md" .claude/skills/README.md
-  cp -a "$TMP_DIR/mis-skills/README.md" .codex/skills/README.md
+  cp -a "$TMP_DIR/mis-skills/README.md" .agents/skills/README.md
 fi
 
-git add .claude .codex
+git add .claude .agents
 git commit -m "chore: install base skills for claude and codex"
 git push
 
