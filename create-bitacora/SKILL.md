@@ -35,7 +35,21 @@ Crear una nueva bitacora sin recibir argumentos y sin sobrescribir archivos exis
    - Si no existe el template y tampoco hay bitacoras previas, usar la `## Plantilla` embebida en este skill como base.
 9. Reemplazar o crear el titulo por: `# Bitacora XXX_FECHA HH:mm:ss descripcion_corta`.
 10. Agregar un `## Summary` inmediatamente despues del encabezado como indice semantico breve para LLMs y agentes.
-11. Intentar obtener el tiempo dedicado solo si el skill `tiempo-trabajo` esta disponible:
+11. Identificar el autor y su procedencia antes de escribir la bitacora. Consultar las fuentes en este orden y usar la primera con un valor util:
+   1. `git config --get bitacora.autor` — autor configurado especificamente para las bitacoras del proyecto.
+   2. `git config --get user.name` — nombre configurado en Git.
+   3. La variable de entorno `BITACORA_AUTOR`.
+   4. El nombre completo (campo GECOS) del usuario del sistema actual.
+   5. El nombre de usuario del sistema actual.
+   6. El nombre publico de la cuenta autenticada de GitHub, solo si `gh` esta disponible y autenticado.
+   7. El login de la cuenta autenticada de GitHub, en las mismas condiciones.
+   8. El autor del ultimo commit que modifico `<bitacoras_dir>/`, obtenido con `git log -1 --format=%an -- <bitacoras_dir>`. Esta es una inferencia: una bitacora nueva aun no pertenece a ningun commit y su autor podria ser otra persona.
+   9. Si no hay ninguna fuente valida, usar `No identificado`.
+   - No transformar correos, logins ni nombres de usuario en nombres de persona.
+   - Considerar no validos los valores vacios y los nombres tecnicos genericos, como `admin`, `administrador`, `root`, `user`, `usuario` o `unknown`, sin importar mayusculas o minusculas.
+   - Crear `## Autor` inmediatamente despues de `## Summary`, con una linea de la forma `- <autor> (<procedencia>)`.
+   - Para la fuente del ultimo commit, usar exactamente la procedencia `inferido del ultimo commit de bitacoras; verificar`.
+12. Intentar obtener el tiempo dedicado solo si el skill `tiempo-trabajo` esta disponible:
    - Buscar el script en estas rutas, en este orden:
      - `.claude/skills/tiempo-trabajo/scripts/tiempo.sh` (Claude Code)
      - `.agents/skills/tiempo-trabajo/scripts/tiempo.sh` (Codex)
@@ -44,14 +58,14 @@ Crear una nueva bitacora sin recibir argumentos y sin sobrescribir archivos exis
    - Si responde que no hay tiempos pendientes, omitir la seccion `## Tiempo`.
    - Si el archivo no existe, no es ejecutable, falla, devuelve error o no responde con un bloque valido `## Tiempo`, omitir la seccion `## Tiempo` y continuar.
    - No inventar, estimar ni recalcular horas: se usa la salida literal del script.
-12. Usar subtitulos `###` dentro de las secciones principales para nombrar temas concretos de la sesion, por ejemplo modulos tocados, bugs, decisiones o pendientes.
-13. Completar secciones con contenido real de la sesion:
+13. Usar subtitulos `###` dentro de las secciones principales para nombrar temas concretos de la sesion, por ejemplo modulos tocados, bugs, decisiones o pendientes.
+14. Completar secciones con contenido real de la sesion:
    - Que fue lo que se hizo
    - Para que se hizo
    - Que problemas se presentaron
    - Como se resolvieron
    - Que continua
-14. Si se incluyo un bloque `## Tiempo` generado por `tiempo-trabajo` y el archivo de bitacora ya existe en disco, intentar ejecutar
+15. Si se incluyo un bloque `## Tiempo` generado por `tiempo-trabajo` y el archivo de bitacora ya existe en disco, intentar ejecutar
    `bash <script_tiempo> consumir` usando la misma ruta que funciono en el `--peek` para vaciar la bandeja de pendientes.
    Nunca vaciarla antes de que la bitacora este escrita. Si el consumo falla, reportarlo brevemente y conservar la bitacora creada.
 
@@ -67,6 +81,7 @@ Crear una nueva bitacora sin recibir argumentos y sin sobrescribir archivos exis
 - Si falta el template pero hay bitacoras previas, usar la ultima solo como referencia estructural; no copiar hechos, decisiones, tiempos ni pendientes de una sesion anterior.
 - Si hay bitacoras previas en formato `XXX_DD_MM_AAAA_descripcion_corta.md`, conservar ese formato para no mezclar convenciones dentro del mismo proyecto.
 - El `Summary` debe quedar inmediatamente despues del titulo.
+- `## Autor` debe quedar inmediatamente despues de `## Summary` e incluir el valor elegido y su procedencia.
 - El `Summary` debe listar los subtitulos `###` realmente usados en la bitacora, no los encabezados `##` fijos.
 - El `Summary` debe funcionar como indice semantico de contenido especifico: cada linea debe apuntar a temas concretos que ayuden a ubicar informacion relevante rapidamente.
 - El objetivo del `Summary` es mejorar la exploracion automatizada de bitacoras largas por parte de LLMs o agentes que necesiten ubicar antecedentes, decisiones, bugs o proximos pasos.
@@ -75,7 +90,7 @@ Crear una nueva bitacora sin recibir argumentos y sin sobrescribir archivos exis
 - Para Claude Code, buscar skills de proyecto en `.claude/skills`.
 - Para Codex, buscar skills de proyecto en `.agents/skills`.
 - El bloque `## Tiempo` solo se agrega cuando `tiempo-trabajo` devuelve un bloque valido durante el `--peek`.
-- Si se agrega, el bloque `## Tiempo` va inmediatamente despues del `## Summary` y antes de `## Que fue lo que se hizo`.
+- Si se agrega, el bloque `## Tiempo` va despues de `## Autor` y antes de `## Que fue lo que se hizo`.
 - Si se agrega, el bloque `## Tiempo` se copia literal de `tiempo.sh consumir --peek`; sus lineas (`inicio`, `fin`, `pausas`, `bruto`, `efectivo`) son parseables por script y no se deben reformatear.
 - Vaciar los tiempos pendientes solo despues de escribir la bitacora y solo si se agrego un bloque `## Tiempo`; nunca vaciarlos antes.
 - Si no hay tiempos pendientes o no se puede usar `tiempo-trabajo`, la bitacora se crea igual, sin seccion `## Tiempo`.
@@ -97,6 +112,9 @@ Usar esta plantilla base para crear la bitacora:
 - `###` Bug, bloqueo o decision relevante
 - `###` Solucion aplicada
 - `###` Siguiente paso o pendiente clave
+
+## Autor
+- Nombre o identificador (procedencia de la identidad)
 
 ## Tiempo
 - inicio: AAAA-MM-DDTHH:mm:ss-05:00
