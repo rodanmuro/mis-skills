@@ -41,7 +41,8 @@ Crear una nueva bitacora sin recibir argumentos y sin sobrescribir archivos exis
    3. La variable de entorno `BITACORA_AUTOR`.
    4. El nombre completo (campo GECOS) del usuario del sistema actual.
    5. El nombre publico de la cuenta autenticada de GitHub, solo si `gh` esta disponible y autenticado.
-   - No aceptar como nombre confiable valores vacios, correos ni nombres tecnicos genericos como `admin`, `administrador`, `root`, `user`, `usuario` o `unknown`, sin importar mayusculas o minusculas.
+   - No aceptar como nombre confiable valores vacios ni nombres tecnicos genericos como `admin`, `administrador`, `root`, `user`, `usuario` o `unknown`, sin importar mayusculas o minusculas.
+   - Rechazar tambien los correos, con una excepcion: `bitacora.autor`. Ese valor no se infiere de ningun sitio, solo existe si alguien lo configuro a proposito, y el paso 12 lo escribe justamente cuando el usuario elige usar su correo. Aplicarle la regla descartaria esa eleccion y volveria a preguntar en cada bitacora.
 12. Si no hay un nombre confiable, consultar `git config --get user.email` y preguntar al usuario: indicar su nombre para configurar `git user.name`, usar el correo de Git como autor o continuar sin configurar una identidad.
    - Si indica un nombre, ejecutar `git config --local user.name "<nombre>"` y usarlo como `nombre configurado en Git`.
    - Si elige usar su correo de Git, ejecutar `git config --local bitacora.autor "<correo>"` y usarlo como `autor configurado para las bitacoras del proyecto`.
@@ -59,7 +60,7 @@ Crear una nueva bitacora sin recibir argumentos y sin sobrescribir archivos exis
      - `.claude/skills/tiempo-trabajo/scripts/tiempo.sh` (Claude Code)
      - `.agents/skills/tiempo-trabajo/scripts/tiempo.sh` (Codex)
    - Si existe en alguna ruta, ejecutar `bash <script_tiempo> consumir --peek`.
-   - Si devuelve un bloque `## Tiempo`, copiarlo tal cual debajo del `## Summary`.
+   - Si devuelve un bloque `## Tiempo`, copiarlo tal cual debajo de `## Autor`.
    - Si responde que no hay tiempos pendientes, omitir la seccion `## Tiempo`.
    - Si el archivo no existe, no es ejecutable, falla, devuelve error o no responde con un bloque valido `## Tiempo`, omitir la seccion `## Tiempo` y continuar.
    - No inventar, estimar ni recalcular horas: se usa la salida literal del script.
