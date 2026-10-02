@@ -7,6 +7,18 @@
 - `###` Solucion aplicada
 - `###` Siguiente paso o pendiente clave
 
+## Autor
+- Nombre o identificador (procedencia de la identidad)
+
+## Tiempo
+- inicio: AAAA-MM-DDTHH:mm:ss-05:00
+- fin: AAAA-MM-DDTHH:mm:ss-05:00
+- pausas: HH:MM:SS (n)
+- bruto: HH:MM:SS
+- efectivo: HH:MM:SS
+
+*(Bloque opcional generado por `tiempo-trabajo`. Copiar literal; omitir la seccion completa si no hay tiempos pendientes, si el skill no existe o si no se puede ejecutar.)*
+
 ## Que fue lo que se hizo
 - Usar subtitulos `###` para separar temas concretos.
 - Incluya detalles de implementacion del codigo sin copiar el codigo completo; solo ideas relevantes.
